@@ -1,62 +1,43 @@
 package com.Mukhtar.seerbitinterview.model;
 
+import lombok.Data;
 import java.math.BigDecimal;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.math.RoundingMode;
 
+@Data
 public class Statistics {
-    private Lock lock = new ReentrantLock();
-    private BigDecimal sum = 0;
-    private BigDecimal avg = 0;
-    private BigDecimal max = 0;
-    private BigDecimal min = Double.MAX_VALUE;
-    private long count = 0;
 
-    public Statistics() {
+    private BigDecimal sum = new BigDecimal("0");
+    private BigDecimal avg = new BigDecimal("0");
+    private BigDecimal max = null;
+    private BigDecimal min = null;
+    private Long count = 0L;
+
+    public void add(BigDecimal occurrence) {
+        if (this.min == null || occurrence.compareTo(this.min) < 0)
+            this.min = occurrence;
+        if (this.max == null || occurrence.compareTo(this.max) > 0)
+            this.max = occurrence;
+        this.count++;
+        this.sum = this.sum.add(occurrence);
+        this.avg = this.sum.divide(new BigDecimal(this.count), 2, RoundingMode.HALF_EVEN);
     }
 
-    private Statistics(Statistics s) {
-        this.sum = s.sum;
-        this.max = s.max;
-        this.min = s.min;
-        this.count = s.count;
-    }
-
-    public void updateStatistics(double amount) {
-        try{
-            lock.lock();
-            sum += amount;
-            count++;
-            min = min < amount ? min : amount;
-            max = max > amount ? max : amount;
-        }finally {
-            lock.unlock();
+    public void add(Statistics sample) {
+        if (sample.getMin() != null) {
+            if (this.getMin() == null || sample.getMin().compareTo(this.getMin()) < 0)
+                this.setMin(sample.getMin());
         }
-    }
 
-    public Statistics getStatistics() {
-        try{
-            lock.lock();
-            return new Statistics(this);
-        }finally {
-            lock.unlock();
+        if (sample.getMax() != null) {
+            if (this.getMax() == null || sample.getMax().compareTo(this.getMax()) > 0)
+                this.setMax(sample.getMax());
         }
-    }
 
-    public double getSum() {
-        return sum;
-    }
+        this.setSum(this.getSum().add(sample.getSum()));
+        this.setCount(this.getCount() + sample.getCount());
+        if (this.getCount() != 0)
+            this.setAvg(this.getSum().divide(new BigDecimal(this.getCount()), 2, RoundingMode.HALF_EVEN));
 
-    public double getMax() {
-        return max;
     }
-
-    public double getMin() {
-        return min;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
 }
