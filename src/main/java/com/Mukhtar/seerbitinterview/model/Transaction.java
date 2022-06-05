@@ -26,13 +26,9 @@ public class Transaction {
         return new Transaction(amount, timestamp);
     }
 
-    /**
-     *
-     * @param currentTimestamp timestamp against which transaction's validity needs to be checked
-     * @return boolean
-     * @throws TransactionOutOfRangeException when transaction if out of range of current timestamp
-     * @throws TransactionTimeInFutureException when transaction is in future
-     */
+
+     //  currentTimestamp timestamp against which transaction's validity needs to be checked
+
     public boolean isValid(long currentTimestamp) throws TransactionTimeInFutureException, TransactionOutOfRangeException {
         if (currentTimestamp < getTimestamp()) {
             throw new TransactionTimeInFutureException();
