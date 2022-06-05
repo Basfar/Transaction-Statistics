@@ -27,7 +27,6 @@ public class Transaction {
     }
 
 
-     //  currentTimestamp timestamp against which transaction's validity needs to be checked
 
     public boolean isValid(long currentTimestamp) throws TransactionTimeInFutureException, TransactionOutOfRangeException {
         if (currentTimestamp < getTimestamp()) {
